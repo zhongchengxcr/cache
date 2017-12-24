@@ -15,6 +15,8 @@ import java.io.Serializable;
  */
 public class ProductInventory extends Model<ProductInventory> {
 
+
+
     private static final long serialVersionUID = 1L;
 
 	private Long productId;
