@@ -77,9 +77,6 @@ public class ProductInventoryController {
 
                 // 等待超过200ms没有从缓存中获取到结果
                 while (true) {
-//				if(waitTime > 25000) {
-//					break;
-//				}
 
                     // 一般公司里面，面向用户的读请求控制在200ms就可以了
                     if (waitTime > 200) {
@@ -94,7 +91,7 @@ public class ProductInventoryController {
                     if (productInventory != null) {
                         logger.info("===========日志===========: 在200ms内读取到了redis中的库存缓存，商品id=" + productInventory.getProductId() + ", 商品库存数量=" + productInventory.getInventoryCnt());
 
-                        logger.info("===========日志===========: 耗时:{}",System.currentTimeMillis()-startTime);
+                        logger.info("===========日志===========: 耗时:{}", System.currentTimeMillis() - startTime);
 
                         return productInventory;
                     }
@@ -111,7 +108,6 @@ public class ProductInventoryController {
                 // 直接尝试从数据库中读取数据
                 productInventory = productInventoryService.findProductInventory(productId);
 
-
                 logger.info("===========日志===========: 在200ms内没有读到缓存，查库:{}", productInventory);
 
                 if (productInventory != null) {
@@ -127,25 +123,17 @@ public class ProductInventoryController {
                     // 2、可能在200ms内，就是读请求在队列中一直积压着，没有等待到它执行（在实际生产环境中，基本是比较坑了）
                     // 所以就直接查一次库，然后给队列里塞进去一个刷新缓存的请求
                     // 3、数据库里本身就没有，缓存穿透，穿透redis，请求到达mysql库
-
                     return productInventory;
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
 
-
             ProductInventory productInventory1 = new ProductInventory();
-
             productInventory1.setProductId(productId);
             productInventory1.setInventoryCnt(-1L);
-
             return productInventory1;
 
-
         }
-
-
     }
-
 }

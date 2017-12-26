@@ -29,6 +29,8 @@ public class RequestProcessorThread implements Callable<Boolean> {
 
     private LinkedBlockingQueue<Request> queue;
 
+    private volatile boolean running = true;
+
     public RequestProcessorThread(LinkedBlockingQueue<Request> queue) {
         this.queue = queue;
     }
@@ -37,7 +39,7 @@ public class RequestProcessorThread implements Callable<Boolean> {
     @Override
     public Boolean call() throws Exception {
         try {
-            for (; ; ) {
+            while (running) {
                 // ArrayBlockingQueue
                 // Blocking就是说明，如果队列满了，或者是空的，那么都会在执行操作的时候，阻塞住
                 Request request = queue.take();

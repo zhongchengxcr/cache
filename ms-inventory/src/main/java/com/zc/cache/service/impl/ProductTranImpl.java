@@ -6,11 +6,8 @@ import com.zc.cache.service.ProductTran;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
 /**
@@ -47,25 +44,21 @@ public class ProductTranImpl implements ProductTran {
     @Override
     public ProductInventory findProductInventory(Long productId) {
 
-        TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
-        transactionTemplate.setIsolationLevel(8);
-        ProductInventory productInventory=   transactionTemplate.execute(new TransactionCallback<ProductInventory>() {
+//        TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
+//        transactionTemplate.setIsolationLevel(8);
+//        ProductInventory productInventory=   transactionTemplate.execute(new TransactionCallback<ProductInventory>() {
+//
+//            @Override
+//            public ProductInventory doInTransaction(TransactionStatus status) {
+//
+//                return productInventory;
+//            }
+//        });
 
-            @Override
-            public ProductInventory doInTransaction(TransactionStatus status) {
-                System.out.println("开始执行 findProductInventory");
-                ProductInventory productInventory = productInventoryMapper.selectById(productId);
-                System.out.println("开始执行 findProductInventory===================");
-                try {
-                    Thread.sleep(10000L);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                System.out.println("结束执行 findProductInventory");
-                return productInventory;
-            }
-        });
-
+        System.out.println("开始执行 findProductInventory");
+        ProductInventory productInventory = productInventoryMapper.selectById(productId);
+        System.out.println("开始执行 findProductInventory===================");
+        System.out.println("结束执行 findProductInventory");
 
         return productInventory;
 
@@ -78,8 +71,8 @@ public class ProductTranImpl implements ProductTran {
 
         //ProductInventory productInventory1 = productInventoryMapper.selectById(productInventory.getProductId());
 
-
         productInventoryMapper.updateById(productInventory);
+
         System.out.println("事物开始========");
 
         try {
