@@ -31,7 +31,7 @@ public class CacheServiceImpl implements CacheService {
      * @param productInfo
      * @return
      */
-    @CachePut(value = CACHE_NAME, key = "'key_'+#productInfo.getId()")
+    @CachePut(value = CACHE_NAME, key = "'key_'+#productInfo.getProductId()")
     @Override
     public ProductInventory saveLocalCache(ProductInventory productInfo) {
         return productInfo;

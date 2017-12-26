@@ -24,14 +24,14 @@ public class CacheController {
     @Resource
     private CacheService cacheService;
 
-    @RequestMapping("/testPutCache")
+    @PutMapping("/testPutCache")
     @ResponseBody
     public String testPutCache(@RequestBody ProductInventory productInventory) {
         cacheService.saveLocalCache(productInventory);
         return "success";
     }
 
-    @RequestMapping("/testGetCache/{id}")
+    @GetMapping("/testGetCache/{id}")
     @ResponseBody
     public ProductInventory testGetCache(@PathVariable Long id) {
         return cacheService.getLocalCache(id);
