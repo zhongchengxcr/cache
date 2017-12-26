@@ -53,7 +53,7 @@ public class ProductInventoryCacheRefreshRequest implements Request {
             logger.info("===========日志===========: 已查询到商品最新的库存数量，商品id=" + productId + ", 商品库存数量=" + productInventory.getInventoryCnt());
 
             // 将最新的商品库存数量，刷新到redis缓存中去
-            productInventoryService.setProductInventoryCache(productInventory);
+              productInventoryService.setProductInventoryCache(productInventory);
         }
 
 

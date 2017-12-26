@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Callable;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * 说明 . <br>
@@ -26,9 +27,9 @@ public class RequestProcessorThread implements Callable<Boolean> {
     private Logger logger = LoggerFactory.getLogger(getClass());
 
 
-    private ArrayBlockingQueue<Request> queue;
+    private LinkedBlockingQueue<Request> queue;
 
-    public RequestProcessorThread(ArrayBlockingQueue<Request> queue) {
+    public RequestProcessorThread(LinkedBlockingQueue<Request> queue) {
         this.queue = queue;
     }
 
@@ -36,7 +37,7 @@ public class RequestProcessorThread implements Callable<Boolean> {
     @Override
     public Boolean call() throws Exception {
         try {
-            while (true) {
+            for (; ; ) {
                 // ArrayBlockingQueue
                 // Blocking就是说明，如果队列满了，或者是空的，那么都会在执行操作的时候，阻塞住
                 Request request = queue.take();
@@ -67,7 +68,8 @@ public class RequestProcessorThread implements Callable<Boolean> {
                         // 说明前面已经有一个数据库更新请求+一个缓存刷新请求了，大家想一想
                         if (flag != null && !flag) {
                             // 对于这种读请求，直接就过滤掉，不要放到后面的内存队列里面去了
-                            return true;
+                            logger.info("===========日志===========: 忽略 重复读");
+                            continue;
                         }
                     }
                 }

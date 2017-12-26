@@ -22,17 +22,8 @@ import java.util.concurrent.*;
 public class RequestQueue {
 
 
-    private int queueSize = 10;
-
-    private ExecutorService threadPool = Executors.newFixedThreadPool(queueSize);
-
     private RequestQueue() {
-        RequestQueue requestQueue = RequestQueue.getInstance();
-        for (int i = 0; i < queueSize; i++) {
-            ArrayBlockingQueue<Request> queue = new ArrayBlockingQueue<>(100);
-            requestQueue.addQueue(queue);
-            threadPool.submit(new RequestProcessorThread(queue));
-        }
+
     }
 
     private Map<Long, Boolean> flagMap = new ConcurrentHashMap<>();
@@ -41,10 +32,10 @@ public class RequestQueue {
 
     public static RequestQueue getInstance() {
         if (requestQueue == null) {
-
             synchronized (RequestQueue.class) {
                 if (requestQueue == null) {
-                    return new RequestQueue();
+                    requestQueue = new RequestQueue();
+                    return requestQueue;
                 } else {
                     return requestQueue;
                 }
@@ -55,7 +46,7 @@ public class RequestQueue {
     }
 
 
-    private List<ArrayBlockingQueue> queueList = new ArrayList<>();
+    private List<LinkedBlockingQueue> queueList = new ArrayList<>();
 
 
     /**
@@ -63,7 +54,7 @@ public class RequestQueue {
      *
      * @param queue
      */
-    public void addQueue(ArrayBlockingQueue<Request> queue) {
+    public void addQueue(LinkedBlockingQueue<Request> queue) {
         this.queueList.add(queue);
     }
 
@@ -82,7 +73,7 @@ public class RequestQueue {
      * @param index
      * @return
      */
-    public ArrayBlockingQueue<Request> getQueue(int index) {
+    public LinkedBlockingQueue<Request> getQueue(int index) {
         return queueList.get(index);
     }
 

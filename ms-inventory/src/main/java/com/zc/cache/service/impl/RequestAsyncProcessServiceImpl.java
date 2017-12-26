@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 
 /**
@@ -24,7 +25,7 @@ public class RequestAsyncProcessServiceImpl implements RequestAsyncProcessServic
     public void process(Request request) {
         try {
             // 做请求的路由，根据每个请求的商品id，路由到对应的内存队列中去
-            ArrayBlockingQueue<Request> queue = getRoutingQueue(request.getProductId());
+            LinkedBlockingQueue<Request> queue = getRoutingQueue(request.getProductId());
             // 将请求放入对应的队列中，完成路由操作
             queue.put(request);
         } catch (Exception e) {
@@ -38,7 +39,7 @@ public class RequestAsyncProcessServiceImpl implements RequestAsyncProcessServic
      * @param productId 商品id
      * @return 内存队列
      */
-    private ArrayBlockingQueue<Request> getRoutingQueue(Long productId) {
+    private LinkedBlockingQueue<Request> getRoutingQueue(Long productId) {
         RequestQueue requestQueue = RequestQueue.getInstance();
 
         // 先获取productId的hash值

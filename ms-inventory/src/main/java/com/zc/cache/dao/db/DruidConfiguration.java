@@ -50,6 +50,7 @@ public class DruidConfiguration {
         datasource.setUsername(username);
         datasource.setPassword(password);
         datasource.setDriverClassName(driverClassName);
+        datasource.setDefaultAutoCommit(false);
 
         return datasource;
     }

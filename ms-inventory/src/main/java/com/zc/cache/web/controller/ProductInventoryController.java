@@ -10,13 +10,12 @@ import com.zc.cache.web.vo.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
-
-@Controller
+@RequestMapping("/test")
+@RestController
 public class ProductInventoryController {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
@@ -30,9 +29,8 @@ public class ProductInventoryController {
     /**
      * 更新商品库存
      */
-    @RequestMapping("/updateProductInventory")
-    @ResponseBody
-    public Response updateProductInventory(ProductInventory productInventory) {
+    @PostMapping("/updateProductInventory")
+    public Response updateProductInventory(@RequestBody ProductInventory productInventory) {
         logger.info("===========日志===========: 接收到更新商品库存的请求，商品id=" + productInventory.getProductId() + ", 商品库存数量=" + productInventory.getInventoryCnt());
 
         Response response;
@@ -53,16 +51,18 @@ public class ProductInventoryController {
     /**
      * 获取商品库存
      */
-    @RequestMapping("/getProductInventory")
-    @ResponseBody
-    public ProductInventory getProductInventory(Long productId) {
+    @GetMapping("/getProductInventory/{productId}")
+    public ProductInventory getProductInventory(@PathVariable Long productId) {
         logger.info("===========日志===========: 接收到一个商品库存的读请求，商品id=" + productId);
 
         ProductInventory productInventory = productInventoryService.getProductInventoryCache(productId);
 
         if (productInventory != null) {
+            logger.info("读缓存");
             return productInventory;
         } else {
+            logger.info("缓存不存在");
+
             try {
                 Request request = new ProductInventoryCacheRefreshRequest(
                         productId, false, productInventoryService);
@@ -88,10 +88,14 @@ public class ProductInventoryController {
 
                     // 尝试去redis中读取一次商品库存的缓存数据
                     productInventory = productInventoryService.getProductInventoryCache(productId);
+                    logger.info("循环度缓存:{}", productInventory);
 
                     // 如果读取到了结果，那么就返回
                     if (productInventory != null) {
                         logger.info("===========日志===========: 在200ms内读取到了redis中的库存缓存，商品id=" + productInventory.getProductId() + ", 商品库存数量=" + productInventory.getInventoryCnt());
+
+                        logger.info("===========日志===========: 耗时:{}",System.currentTimeMillis()-startTime);
+
                         return productInventory;
                     }
 
@@ -103,8 +107,13 @@ public class ProductInventoryController {
                     }
                 }
 
+
                 // 直接尝试从数据库中读取数据
                 productInventory = productInventoryService.findProductInventory(productId);
+
+
+                logger.info("===========日志===========: 在200ms内没有读到缓存，查库:{}", productInventory);
+
                 if (productInventory != null) {
                     // 将缓存刷新一下
                     // 这个过程，实际上是一个读操作的过程，但是没有放在队列中串行去处理，还是有数据不一致的问题

@@ -67,7 +67,7 @@ public class MyGenerator {
 //        strategy.setNaming(NamingStrategy.remove_prefix_and_camel);// 表名生成策略
 //        strategy.setNaming(NamingStrategy.removePrefixAndCamel());// 表名生成策略
         strategy.setInclude(new String[] {
-                "user"
+                "product_inventory"
                 }); // 需要生成的表
 
         strategy.setDbColumnUnderline(true);
