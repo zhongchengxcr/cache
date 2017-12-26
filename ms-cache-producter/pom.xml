@@ -4,18 +4,16 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-
     <parent>
-        <groupId>com.zc.cache</groupId>
         <artifactId>cache</artifactId>
+        <groupId>com.zc.cache</groupId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>ms-inventory</artifactId>
+
+    <artifactId>ms-cache-producter</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>war</packaging>
-
-
 
     <dependencies>
 
@@ -41,9 +39,20 @@
         </dependency>
 
         <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-cache</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <version>5.1.38</version>
+        </dependency>
+
+        <!-- ehcache -->
+        <dependency>
+            <groupId>net.sf.ehcache</groupId>
+            <artifactId>ehcache</artifactId>
         </dependency>
 
         <!-- redis -->
@@ -118,9 +127,8 @@
 
     </dependencies>
 
-
     <build>
-        <finalName>ms-inventory</finalName>
+        <finalName>ms-cache-producter</finalName>
 
         <plugins>
             <plugin>
@@ -143,5 +151,6 @@
             </plugin>
         </plugins>
     </build>
+
 
 </project>

@@ -1,5 +1,6 @@
 server:
-  display-name: ms-inventory
+  display-name: ms-cache-producter
+  port: 8081
 spring:
   http:
     encoding:
