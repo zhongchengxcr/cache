@@ -56,9 +56,9 @@ public class MyGenerator {
             }
         });
         dsc.setDriverName("com.mysql.jdbc.Driver");
-        dsc.setUsername("ecache");
-        dsc.setPassword("ecache");
-        dsc.setUrl("jdbc:mysql://192.168.0.108:3306/ecache?characterEncoding=UTF-8");
+        dsc.setUsername("root");
+        dsc.setPassword("123456");
+        dsc.setUrl("jdbc:mysql://localhost:3306/ecache?characterEncoding=UTF-8");
         mpg.setDataSource(dsc);
 
         // 策略配置
@@ -66,9 +66,9 @@ public class MyGenerator {
         strategy.setTablePrefix(new String[]{});// 此处可以修改为您的表前缀
 //        strategy.setNaming(NamingStrategy.remove_prefix_and_camel);// 表名生成策略
 //        strategy.setNaming(NamingStrategy.removePrefixAndCamel());// 表名生成策略
-        strategy.setInclude(new String[] {
-                "product_inventory"
-                }); // 需要生成的表
+//        strategy.setInclude(new String[] {
+//                "product_info","shop_info"
+//                }); // 需要生成的表
 
         strategy.setDbColumnUnderline(true);
         strategy.setNaming(NamingStrategy.underline_to_camel);
@@ -98,7 +98,7 @@ public class MyGenerator {
 
         // 包配置
         PackageConfig pc = new PackageConfig();
-        pc.setParent("com.zc.com.zc.cache.dao");
+        pc.setParent("com.zc.cache.dao");
         pc.setModuleName("db");
 //        pc.setController("controller");
 

@@ -78,6 +78,10 @@
             <version>${mybatisplus-spring-boot-starter.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.apache.velocity</groupId>
+            <artifactId>velocity</artifactId>
+        </dependency>
 
 
         <!-- hibernate validator -->
