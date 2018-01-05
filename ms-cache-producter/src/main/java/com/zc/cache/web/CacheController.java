@@ -4,6 +4,8 @@ import com.zc.cache.dao.db.entity.ProductInfo;
 import com.zc.cache.dao.db.entity.ProductInventory;
 import com.zc.cache.dao.db.entity.ShopInfo;
 import com.zc.cache.dao.db.mapper.ShopInfoMapper;
+import com.zc.cache.prewarm.CachePrewarmThread;
+import com.zc.cache.rebuild.RebuildCacheQueue;
 import com.zc.cache.service.CacheService;
 import com.zc.cache.service.ProductService;
 import org.slf4j.Logger;
@@ -12,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.concurrent.Callable;
 
 /**
  * 说明 . <br>
@@ -36,6 +39,14 @@ public class CacheController {
     @Resource
     private ProductService productService;
 
+
+    @GetMapping("/preHot")
+    public Callable<String> preHot() throws InterruptedException {
+
+        return new CachePrewarmThread();
+    }
+
+
     @GetMapping("/product/load/{productId}")
     public ProductInfo getProduct(@PathVariable Long productId) throws InterruptedException {
         return productService.getProductInfoAndSetIntoRedis(productId);
@@ -43,7 +54,7 @@ public class CacheController {
 
 
     @GetMapping("/product/{productId}")
-    public ProductInfo getProductInfo(@PathVariable Long productId) {
+    public ProductInfo getProductInfo(@PathVariable Long productId) throws InterruptedException {
 
         logger.info("获取 product,productId : {}", productId);
         ProductInfo productInfo;
@@ -52,13 +63,24 @@ public class CacheController {
         logger.info("堆缓存获取 product 结果, product : {}", productInfo);
         if (productInfo == null) {
             productInfo = cacheService.getProductInfoRedisCache(productId);
-
             logger.info("Redis 缓存获取 product 结果, product : {}", productInfo);
+        }
+
+        if (productInfo == null) {
+            productInfo = productService.getProductInfoFromDb(1L);
+            logger.info("DB 获取 product 结果, product : {}", productInfo);
+
+            if (productInfo != null) {
+                RebuildCacheQueue.put(productInfo);
+            }
         }
 
         return productInfo;
     }
 
+
+    @Resource
+    private ShopInfoMapper shopInfoMapper;
 
     @GetMapping("/shop/{shopId}")
     public ShopInfo getShopInfo(@PathVariable Long shopId) {
@@ -70,8 +92,15 @@ public class CacheController {
         logger.info("堆缓存获取 shop 结果, shop : {}", shopInfo);
         if (shopInfo == null) {
             shopInfo = cacheService.getShopInfoRedisCache(shopId);
-
             logger.info("Redis 缓存获取 shop 结果, shop : {}", shopInfo);
+        }
+
+        if (shopInfo == null) {
+            shopInfo = shopInfoMapper.selectById(shopId);
+            if (shopInfo != null) {
+                cacheService.saveShopInfoLocalCache(shopInfo);
+                cacheService.saveShopInfoRedisCache(shopInfo);
+            }
         }
 
         return shopInfo;

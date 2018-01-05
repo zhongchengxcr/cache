@@ -5,6 +5,7 @@ import com.zc.cache.dao.db.entity.ShopInfo;
 import com.zc.cache.dao.db.mapper.ShopInfoMapper;
 import com.zc.cache.kafka.KafkaConfProperties;
 import com.zc.cache.kafka.KafkaConsumer;
+import com.zc.cache.rebuild.RebuildCacheTask;
 import com.zc.cache.spring.SpringContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,7 +63,7 @@ public class ServiceReadyListener implements ServletContextListener {
         SpringContext.setApplicationContext(context);
 
         executorService.submit(new KafkaConsumer("shop-cache", kafkaMessageProcessExecutor));
-
+        executorService.submit(new RebuildCacheTask());
 
         logger.info("init complete ======================");
     }

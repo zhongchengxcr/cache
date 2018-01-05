@@ -96,12 +96,9 @@ public class KafkaMessageProcessor implements Runnable {
             zooKeeperSession.acquireDistributedLock(lockKey);
             cacheService.saveProductInfoLocalCache(productInfo);
             cacheService.saveProductInfoRedisCache(productInfo);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
         } finally {
             zooKeeperSession.releaseDistributedLock(lockKey);
         }
-
 
     }
 
@@ -133,13 +130,9 @@ public class KafkaMessageProcessor implements Runnable {
             cacheService.saveShopInfoLocalCache(shopInfo);
             System.out.println("===================获取刚保存到本地缓存的店铺信息：" + cacheService.getShopInfoFromLocalCache(shopId));
             cacheService.saveShopInfoRedisCache(shopInfo);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
         } finally {
             zooKeeperSession.releaseDistributedLock(lockKey);
         }
-
-
     }
 
 }

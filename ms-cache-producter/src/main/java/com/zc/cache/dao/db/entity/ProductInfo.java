@@ -3,7 +3,11 @@ package com.zc.cache.dao.db.entity;
 import java.io.Serializable;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import com.baomidou.mybatisplus.activerecord.Model;
+import com.baomidou.mybatisplus.annotations.TableId;
+import com.baomidou.mybatisplus.enums.IdType;
+
 import java.io.Serializable;
 
 /**
@@ -12,12 +16,13 @@ import java.io.Serializable;
  * </p>
  *
  * @author zhongc
- * @since 2017-12-27
+ * @since 2018-01-04
  */
 public class ProductInfo extends Model<ProductInfo> {
 
     private static final long serialVersionUID = 1L;
 
+	@TableId(value="id", type= IdType.AUTO)
 	private Long id;
 	private String name;
 	private BigDecimal price;
@@ -27,6 +32,7 @@ public class ProductInfo extends Model<ProductInfo> {
 	private String color;
 	private String size;
 	private Long shopId;
+	private Date modifiedTime;
 
 
 	public Long getId() {
@@ -101,6 +107,14 @@ public class ProductInfo extends Model<ProductInfo> {
 		this.shopId = shopId;
 	}
 
+	public Date getModifiedTime() {
+		return modifiedTime;
+	}
+
+	public void setModifiedTime(Date modifiedTime) {
+		this.modifiedTime = modifiedTime;
+	}
+
 	@Override
 	protected Serializable pkVal() {
 		return this.id;
@@ -118,6 +132,7 @@ public class ProductInfo extends Model<ProductInfo> {
 			", color=" + color +
 			", size=" + size +
 			", shopId=" + shopId +
+			", modifiedTime=" + modifiedTime +
 			"}";
 	}
 }
