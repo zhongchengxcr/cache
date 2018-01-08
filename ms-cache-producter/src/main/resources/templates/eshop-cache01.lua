@@ -45,7 +45,7 @@ if product_cache == "" or product_cache == nil then
     local http = require("resty.http")
     local httpc = http.new()
 
-    local resp, err = httpc:request_uri("http://192.168.0.101:8081", {
+    local resp, _ = httpc:request_uri("http://192.168.0.101:8081", {
         method = "GET",
         path = "/product/" .. product_id
     })
