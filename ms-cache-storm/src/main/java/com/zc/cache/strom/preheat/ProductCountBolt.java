@@ -2,6 +2,9 @@ package com.zc.cache.strom.preheat;
 
 import com.alibaba.fastjson.JSON;
 import com.zc.cache.strom.util.ZooKeeperSession;
+import okhttp3.Call;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
 import org.apache.storm.task.OutputCollector;
 import org.apache.storm.task.TopologyContext;
 import org.apache.storm.topology.OutputFieldsDeclarer;
@@ -46,6 +49,10 @@ public class ProductCountBolt extends BaseRichBolt {
 
     private ScheduledExecutorService scheduledExecutorService;
 
+    private static final String HOT_POINT_PRODUCY_NOTIC_URL = "http://192.168.0.107/hot_product?productId=%s&method=%s";
+
+    private static OkHttpClient okHttpClient;
+
 
     private Comparator<Map.Entry<Long, Long>> PRODUCT_COUNT_COMPARATOR;
 
@@ -85,15 +92,21 @@ public class ProductCountBolt extends BaseRichBolt {
         };
         try {
             zkSession = ZooKeeperSession.getInstance();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
 
         scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
 
-        scheduledExecutorService.scheduleWithFixedDelay(new ProductCountProcess(), 5, 5, TimeUnit.SECONDS);
+        okHttpClient = new OkHttpClient.Builder()
+                //.addInterceptor(new GzipRequestInterceptor())
+                .connectTimeout(5, TimeUnit.SECONDS)
+                .readTimeout(5, TimeUnit.SECONDS)
+                .writeTimeout(5, TimeUnit.SECONDS)
+                .build();
+
+        scheduledExecutorService.scheduleWithFixedDelay(new ProductCountProcess(), 5, 5, TimeUnit.MINUTES);
+        scheduledExecutorService.scheduleWithFixedDelay(new HotPointProductDiscover(), 5, 5, TimeUnit.SECONDS);
 
         initTaskId(taskId);
 
@@ -117,6 +130,14 @@ public class ProductCountBolt extends BaseRichBolt {
     @Override
     public void declareOutputFields(OutputFieldsDeclarer outputFieldsDeclarer) {
 
+    }
+
+
+    private class HotPointProductDiscover implements Runnable {
+        @Override
+        public void run() {
+
+        }
     }
 
 
@@ -159,6 +180,23 @@ public class ProductCountBolt extends BaseRichBolt {
             }
         }
 
+
+        private void noticHotPointProduct(Long productId, String method) {
+            String url = String.format(HOT_POINT_PRODUCY_NOTIC_URL, productId, method);
+            Request request = new Request.Builder()
+                    //尽可能服用底层TCP连接
+                    .addHeader("Connection", "keep-alive")
+                    .url(url)
+                    .get()
+                    .build();
+
+            Call call = okHttpClient.newCall(request);
+            try {
+                call.execute();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
 
         private <E> List<E> top(Collection<E> collection, int n, Comparator<E> comparator) {
 
