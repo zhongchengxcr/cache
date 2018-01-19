@@ -16,6 +16,7 @@
         <module>ms-inventory</module>
         <module>ms-cache-producter</module>
         <module>ms-cache-storm</module>
+        <module>ms-ha</module>
     </modules>
 
     <dependencyManagement>

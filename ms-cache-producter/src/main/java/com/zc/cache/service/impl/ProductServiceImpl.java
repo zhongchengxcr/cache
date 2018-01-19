@@ -70,7 +70,7 @@ public class ProductServiceImpl implements ProductService {
                 }
 
 
-                Thread.sleep(80000);
+                //Thread.sleep(80000);
                 cacheService.saveProductInfoLocalCache(productInfo);
                 cacheService.saveProductInfoRedisCache(productInfo);
             }finally {

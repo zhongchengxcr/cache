@@ -51,7 +51,9 @@ if product_cache == "" or product_cache == nil then
     })
 
     product_cache = resp.body
-    cache_ngx:set(product_cache_key, product_cache, 10 * 60)
+    -- 失效时间随机,避免同时失效
+    local expire_time = math.random(600,1200)
+    cache_ngx:set(product_cache_key, product_cache, expire_time)
 end
 
 

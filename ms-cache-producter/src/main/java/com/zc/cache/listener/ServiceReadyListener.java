@@ -62,8 +62,8 @@ public class ServiceReadyListener implements ServletContextListener {
         ApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(sc);
         SpringContext.setApplicationContext(context);
 
-        executorService.submit(new KafkaConsumer("shop-cache", kafkaMessageProcessExecutor));
-        executorService.submit(new RebuildCacheTask());
+        //executorService.submit(new KafkaConsumer("shop-cache", kafkaMessageProcessExecutor));
+        //executorService.submit(new RebuildCacheTask());
 
         logger.info("init complete ======================");
     }
